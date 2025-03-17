@@ -4,6 +4,7 @@ from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.model_selection import train_test_split
 from joblib import Parallel, delayed
 from common.functions import find_indices_to_drop, drop_index, DatasetWithForcedDistribution
+import keras
 
 
 def data_train_test(train_size=0.5):
@@ -124,3 +125,12 @@ def generate_shadow_model_outputs(dataset: DatasetWithForcedDistribution, shadow
         delayed(train_and_generate_output)(X, y, shadow_input, output_probability, i) for i in range(n_shadow_models))
     outputs = list(parallel_results_generator)
     return outputs
+
+
+def adult_adversary(input_shape):
+    adv = keras.Sequential()
+    adv.add(keras.Input(shape=input_shape))
+    adv.add(keras.layers.Dense(28))
+    adv.add(keras.layers.Dense(6))
+    adv.add(keras.layers.Dense(1))
+    return adv
